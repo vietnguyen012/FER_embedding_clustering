@@ -82,3 +82,13 @@ class MLP(nn.Module):
 
     def forward(self, x):
         return self.net(x)
+
+class naive_MLP(nn.Module):
+    # layer_sizes[0] is the dimension of the input
+    # layer_sizes[-1] is the dimension of the output
+    def __init__(self, layer_sizes, final_relu=False):
+        super().__init__()
+        self.lin3 = nn.Linear(4096,7)
+
+    def forward(self, x):
+        return self.lin3(x)

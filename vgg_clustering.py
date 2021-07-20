@@ -10,12 +10,11 @@ import logging
 import numpy as np
 from matplotlib import pyplot as plt
 torch.manual_seed(0)
-from fcm_k_means import visualizer_hook
 from utils import fcm_k_means,get_list_label,visualize_embedding_pred_n_gt
 
 if __name__ == '__main__':
     device = 'cuda'
-    evaluate_on_fcm=True
+    evaluate_on_fcm=False
     mu, st = 0, 255
     test_transform = transforms.Compose([
         transforms.TenCrop(40),
@@ -60,7 +59,7 @@ if __name__ == '__main__':
             outputs = outputs.view(bs,ncrops,-1)
             outputs = torch.sum(outputs,dim=1)/ncrops
             output_test_features.append(outputs)
-
     output_test_features = torch.cat(output_test_features,dim=0).detach().cpu().numpy()
+
     remaped_label = fcm_k_means(output_train_features,output_test_features,label_train,label_test,evaluate_on_fcm)
-    visualize_embedding_pred_n_gt(output_test_features,label_test,remaped_label)
+    visualize_embedding_pred_n_gt(output_test_features,label_test,output_train_features,label_train,remaped_label)

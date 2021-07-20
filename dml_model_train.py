@@ -18,7 +18,7 @@ import pytorch_metric_learning
 import torch.nn.functional as F
 logging.getLogger().setLevel(logging.INFO)
 logging.info("VERSION %s"%pytorch_metric_learning.__version__)
-from model import Vgg,MLP
+from model import Vgg,naive_MLP
 from data import get_data,get_writer
 torch.manual_seed(0)
 from torchvision import transforms
@@ -58,7 +58,7 @@ writer.close()
 trunk_output_size = trunk.lin3.in_features
 trunk.lin3 = common_functions.Identity()
 trunk = torch.nn.DataParallel(trunk.to(device))
-embedder = torch.nn.DataParallel(MLP([trunk_output_size, 7]).to(device))
+embedder = torch.nn.DataParallel(naive_MLP([trunk_output_size, 7]).to(device))
 trunk_optimizer = torch.optim.SGD(trunk.parameters(), lr=0.01, momentum=0.9, nesterov=True, weight_decay=0.0001)
 embedder_optimizer = torch.optim.SGD(embedder.parameters(), lr=0.1, momentum=0.9, nesterov=True, weight_decay=0.0001)
 trunk_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(trunk_optimizer, mode='max', factor=0.75, patience=5, verbose=True)

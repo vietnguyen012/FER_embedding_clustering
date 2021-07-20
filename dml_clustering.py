@@ -1,4 +1,4 @@
-from model import Vgg,MLP
+from model import Vgg,naive_MLP
 from pytorch_metric_learning.utils import common_functions
 from data import get_data
 from torch.utils.data import DataLoader
@@ -10,8 +10,9 @@ from matplotlib import pyplot as plt
 from sklearn.cluster import KMeans
 torch.manual_seed(0)
 from torchvision import transforms
-evaluate_on_fcm = True
+evaluate_on_fcm = False
 from utils import fcm_k_means,get_list_label,visualize_embedding_pred_n_gt
+from sklearn.metrics import precision_score,f1_score,recall_score,confusion_matrix
 
 if __name__ == '__main__':
 
@@ -32,9 +33,9 @@ if __name__ == '__main__':
     trunk = Vgg().to(device)
     trunk_output_size = trunk.lin3.in_features
     trunk.lin3 = common_functions.Identity()
-    trunk.load_state_dict(torch.load('example_saved_models/trunk_best76.pth'))
-    embedder = MLP([trunk_output_size, 7]).to(device)
-    embedder.load_state_dict(torch.load('example_saved_models/embedder_best76.pth'))
+    trunk.load_state_dict(torch.load('example_saved_models/trunk_best105.pth'))
+    embedder = naive_MLP([trunk_output_size, 7]).to(device)
+    embedder.load_state_dict(torch.load('example_saved_models/embedder_best105.pth'))
 
     models = {"trunk":trunk,"embedder":embedder}
     test_loader = DataLoader(test_data,batch_size=128,shuffle=False,num_workers=2)
@@ -66,8 +67,6 @@ if __name__ == '__main__':
             outputs = outputs.view(bs,ncrops,-1)
             outputs = torch.sum(outputs,dim=1)/ncrops
             output_test_features.append(outputs)
-
-
     output_test_features = torch.cat(output_test_features,dim=0).detach().cpu().numpy()
     remapped_labels = fcm_k_means(output_train_features,output_test_features,label_train,label_test,evaluate_on_fcm)
-    visualize_embedding_pred_n_gt(output_test_features,label_test,remaped_label)
+    visualize_embedding_pred_n_gt(output_test_features,label_test,output_train_features,label_train,remapped_labels)

@@ -6,7 +6,6 @@ from remap_label import remap_labels
 from sklearn.metrics import precision_score,f1_score,recall_score,confusion_matrix
 import umap
 from cycler import cycler
-
 def visualizer_hook(umapper, umap_embeddings, labels, *args):
     logging.info("UMAP plot")
     label_set = np.unique(labels)
@@ -44,10 +43,10 @@ def fcm_k_means(output_train_features,output_test_features,label_train,label_tes
     return remapped_labels
 
 def get_list_label(data):
-    label = []
+    labels = []
     for data,label in data:
-        label.append(label)
-    return label = np.array(label)
+        labels.append(label)
+    return  np.array(labels)
 
 
 def visualize_embedding_pred_n_gt(output_test_features,label_test,remaped_label):

@@ -11,7 +11,7 @@ from sklearn.cluster import KMeans
 torch.manual_seed(0)
 from torchvision import transforms
 evaluate_on_fcm = True
-from utils import fcm_k_means,get_list_label
+from utils import fcm_k_means,get_list_label,visualize_embedding_pred_n_gt
 
 if __name__ == '__main__':
 
@@ -32,9 +32,9 @@ if __name__ == '__main__':
     trunk = Vgg().to(device)
     trunk_output_size = trunk.lin3.in_features
     trunk.lin3 = common_functions.Identity()
-    trunk.load_state_dict(torch.load('example_saved_models/trunk_best68.pth'))
+    trunk.load_state_dict(torch.load('example_saved_models/trunk_best76.pth'))
     embedder = MLP([trunk_output_size, 7]).to(device)
-    embedder.load_state_dict(torch.load('example_saved_models/embedder_best68.pth'))
+    embedder.load_state_dict(torch.load('example_saved_models/embedder_best76.pth'))
 
     models = {"trunk":trunk,"embedder":embedder}
     test_loader = DataLoader(test_data,batch_size=128,shuffle=False,num_workers=2)

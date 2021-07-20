@@ -130,14 +130,14 @@ class BaseTester:
         input_imgs = c_f.to_device(
             input_imgs, device=self.data_device, dtype=self.dtype
         )
-        bs,ncrops,c,h,w = input_imgs.shape
-        input_imgs = input_imgs.view(-1,c,h,w)
+        # bs,ncrops,c,h,w = input_imgs.shape
+        # input_imgs = input_imgs.view(-1,c,h,w)
         trunk_output = trunk_model(input_imgs)
         if self.use_trunk_output:
             return trunk_output
         outputs = embedder_model(trunk_output)
-        outputs = outputs.view(bs,ncrops,-1)
-        outputs = torch.sum(outputs,dim=1)/ncrops
+        # outputs = outputs.view(bs,ncrops,-1)
+        # outputs = torch.sum(outputs,dim=1)/ncrops
         return outputs
 
     def maybe_visualize(self, embeddings_and_labels, epoch):

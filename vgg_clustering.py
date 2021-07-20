@@ -11,7 +11,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 torch.manual_seed(0)
 from fcm_k_means import visualizer_hook
-from utils import fcm_k_means,get_list_label
+from utils import fcm_k_means,get_list_label,visualize_embedding_pred_n_gt
 
 if __name__ == '__main__':
     device = 'cuda'

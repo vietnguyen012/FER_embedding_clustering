@@ -23,34 +23,23 @@ from data import get_data,get_writer
 torch.manual_seed(0)
 from torchvision import transforms
 from metric_only import MetricLossOnly
-
+from utils import get_list_label
 
 mu, st = 0, 255
 train_transform = transforms.Compose([
-            transforms.RandomResizedCrop(48, scale=(0.8, 1.2)),
-            transforms.RandomApply([transforms.RandomAffine(0, translate=(0.2, 0.2))], p=0.5),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomApply([transforms.RandomRotation(10)], p=0.5),
-
-            transforms.TenCrop(40),
-            transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
-            transforms.Lambda(lambda tensors: torch.stack([transforms.Normalize(mean=(mu,), std=(st,))(t) for t in tensors])),
-            transforms.Lambda(lambda tensors: torch.stack([transforms.RandomErasing(p=0.5)(t) for t in tensors])),
+                transforms.Resize(40),
+                transforms.ToTensor()
         ])
 test_transform = transforms.Compose([
-        transforms.TenCrop(40),
-        transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
-        transforms.Lambda(lambda tensors: torch.stack([transforms.Normalize(mean=(mu,), std=(st,))(t) for t in tensors])),
+        transforms.Resize(40),
+        transforms.ToTensor(),
     ])
 
 train_data, test_data = get_data(train_transform = train_transform,test_transform=test_transform)
 
 writer = get_writer()
 
-label_items = []
-for data,label in train_data:
-    label_items.append(label)
-
+label_items = get_list_label(train_data)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(device)
@@ -91,7 +80,7 @@ miner = miners.MultiSimilarityMiner(epsilon=0.1)
 sampler = samplers.MPerClassSampler(label_items, m=16, length_before_new_iter=len(train_data))
 
 batch_size = 32
-num_epochs = 100
+num_epochs = 300
 
 models = {"trunk": trunk, "embedder": embedder}
 optimizers = {"trunk_optimizer": trunk_optimizer, "embedder_optimizer": embedder_optimizer}
